@@ -44,8 +44,8 @@ public class Player : MonoBehaviour
         position += direction.normalized * speed * Time.fixedDeltaTime;
 
         // Limites da área
-        position.x = Mathf.Clamp(position.x, -8.9f, 8.9f);
-        position.y = Mathf.Clamp(position.y, -3.7f, -1f);
+        position.x = Mathf.Clamp(position.x, -9f, 9f);
+        position.y = Mathf.Clamp(position.y, -4f, -1f);
 
         rigidbody.MovePosition(position);
     }
