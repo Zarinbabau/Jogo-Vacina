@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 8322779835946144437}
   - component: {fileID: 5370005166319405349}
   - component: {fileID: 4371312591750883262}
-  - component: {fileID: 2541503940082744114}
+  - component: {fileID: 5329104176255544958}
   m_Layer: 0
   m_Name: Corpo centopeia
   m_TagString: enemie
@@ -113,7 +113,7 @@ SphereCollider:
   serializedVersion: 3
   m_Radius: 0.475
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &2541503940082744114
+--- !u!114 &5329104176255544958
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

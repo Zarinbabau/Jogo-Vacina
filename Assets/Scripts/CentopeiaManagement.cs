@@ -1,44 +1,79 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class CentopeiaManagement : MonoBehaviour
 {
-    private List<CorpoCentopeia> segments = new List<CorpoCentopeia>();
-    
-    public CorpoCentopeia segmentPrefab;
-    
-    public GameObject headSprite;
-    public GameObject bodySprite;
+    private List<GameObject> segments = new List<GameObject>();
 
+    public GameObject headPrefab;
+    public GameObject bodyPrefab;
+
+    public float speed = 1f;
     public int size = 12;
+    public LayerMask collisionMask;
 
     private void Start()
     {
-        Respawn();    
+        Respawn();
     }
 
     private void Respawn()
     {
-        foreach (CorpoCentopeia segment in segments)
+        foreach (GameObject segment in segments)
         {
-            Destroy(segment.gameObject);
+            Destroy(segment);
         }
+
         segments.Clear();
 
         for (int i = 0; i < size; i++)
         {
-            Vector2 position = GridPosition(transform.position) + (Vector2.left * i);
-            CorpoCentopeia segment = Instantiate(segmentPrefab, position, Quaternion.identity);
+            Vector3 position = GridPosition(transform.position) + (Vector3.left * i);
+
+            GameObject segment;
+
+            if (i == 0)
+            {
+                segment = Instantiate(headPrefab, position, Quaternion.identity);
+            }
+            else
+            {
+                segment = Instantiate(bodyPrefab, position, Quaternion.identity);
+            }
+
+            CorpoCentopeia corpo = segment.GetComponent<CorpoCentopeia>();
+
+            corpo.centipede = this;
+
             segments.Add(segment);
+        }
+
+        for (int i = 0; i < segments.Count; i++)
+        {
+            CorpoCentopeia segment = segments[i].GetComponent<CorpoCentopeia>();
+
+            segment.ahead = GetSegmentAt(i - 1);
+            segment.behind = GetSegmentAt(i + 1);
         }
     }
 
-    private Vector2 GridPosition(Vector2 position)
+    private CorpoCentopeia GetSegmentAt(int index)
+    {
+        if (index >= 0 && index < segments.Count)
+        {
+            return segments[index].GetComponent<CorpoCentopeia>();
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    private Vector3 GridPosition(Vector3 position)
     {
         position.x = Mathf.Round(position.x);
-        position.y = Mathf.Round(position.y);
+        position.z = Mathf.Round(position.z);
+
         return position;
     }
 }
