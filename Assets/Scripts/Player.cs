@@ -1,4 +1,4 @@
-using System.Collections; // Necessário para usar Coroutines
+using System.Collections; // Necessario para usar Coroutines
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -72,14 +72,14 @@ public class Player : MonoBehaviour
     // Deteta o impacto com a centopeia
     private void OnCollisionEnter(Collision collision)
     {
-        // Se bater na centopeia e NÃO estiver invulnerável
+        // Se bater na centopeia e Nï¿½O estiver invulnerï¿½vel
         if (!isInvulneravel && collision.gameObject.layer == LayerMask.NameToLayer("Centopeia"))
         {
             ReceberDano();
         }
     }
 
-    // Caso a centopeia esteja configurada como Trigger, use este método também por segurança
+    // Caso a centopeia esteja configurada como Trigger, use este mï¿½todo tambï¿½m por seguranï¿½a
     private void OnTriggerEnter(Collider other)
     {
         if (!isInvulneravel && other.gameObject.layer == LayerMask.NameToLayer("Centopeia"))
@@ -100,10 +100,10 @@ public class Player : MonoBehaviour
         isInvulneravel = true;
         float tempoPassado = 0f;
 
-        // Enquanto não passar os 0.5 segundos...
+        // Enquanto nao passar os 0.5 segundos...
         while (tempoPassado < tempoInvulnerabilidade)
         {
-            // Inverte a visibilidade do modelo (se está visível, esconde; se está escondido, mostra)
+            // Inverte a visibilidade do modelo (se estï¿½ visï¿½vel, esconde; se estï¿½ escondido, mostra)
             playerRenderer.enabled = !playerRenderer.enabled;
 
             // Espera 0.1 segundos antes de piscar de novo
@@ -111,7 +111,7 @@ public class Player : MonoBehaviour
             tempoPassado += 0.1f;
         }
 
-        // Garante que no final ele fica visível e vulnerável novamente
+        // Garante que no final ele fica visivel e vulneravel novamente
         playerRenderer.enabled = true;
         isInvulneravel = false;
     }
