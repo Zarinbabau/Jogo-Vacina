@@ -12,7 +12,7 @@ public class CorpoCentopeia : MonoBehaviour
     public float verticalDirection = -1f;
 
     private Vector3 targetPosition;
-    public int vidaSegmento = 2; // Pode ajustar diretamente no Inspector
+    public int vidaSegmento; 
 
     private void Awake()
     {
@@ -116,7 +116,7 @@ public class CorpoCentopeia : MonoBehaviour
             // Reduz 1 de vida do segmento atingido
             vidaSegmento--;
 
-            // Só morre, divide-se e vira cogumelo se a vida esgotar
+            // Sï¿½ morre, divide-se e vira cogumelo se a vida esgotar
             if (vidaSegmento <= 0)
             {
                 centipede.Remove(this);

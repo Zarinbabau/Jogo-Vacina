@@ -1,4 +1,4 @@
-using System.Collections; // Necessario para usar Coroutines
+using System.Collections; // Necessrio para usar Coroutines
 using UnityEngine;
 
 public class Player : MonoBehaviour
