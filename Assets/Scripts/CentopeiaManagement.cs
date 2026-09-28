@@ -10,7 +10,10 @@ public class CentopeiaManagement : MonoBehaviour
 
     public float speed = 1f;
     public int size = 12;
+
+    public BoxCollider homeArea;
     public LayerMask collisionMask;
+    
 
     private void Start()
     {

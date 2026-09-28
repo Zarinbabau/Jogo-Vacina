@@ -6,7 +6,6 @@ public class MushroomField : MonoBehaviour
     public GameObject mushroomPrefab;
     public int mushroomCount = 10;
 
-
     private void Awake()
     {
         area = GetComponent<BoxCollider>();
@@ -19,7 +18,7 @@ public class MushroomField : MonoBehaviour
 
     private void Generate()
     {
-    Bounds bounds = area.bounds;
+        Bounds bounds = area.bounds;
 
         for (int i = 0; i < mushroomCount; i++)
         {
@@ -29,7 +28,8 @@ public class MushroomField : MonoBehaviour
             position.y = Mathf.Round(Random.Range(bounds.min.y, bounds.max.y));
             position.z = Mathf.Round(Random.Range(bounds.min.z, bounds.max.z));
 
-            Instantiate(mushroomPrefab, position, Quaternion.identity, transform);
+            // A linha abaixo foi alterada para usar a rotação original do Prefab
+            Instantiate(mushroomPrefab, position, mushroomPrefab.transform.rotation, transform);
         }
     }
 }
