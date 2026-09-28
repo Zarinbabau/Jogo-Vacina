@@ -79,7 +79,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    // Caso a centopeia esteja configurada como Trigger, use este m�todo tamb�m por seguran�a
     private void OnTriggerEnter(Collider other)
     {
         if (!isInvulneravel && other.gameObject.layer == LayerMask.NameToLayer("Centopeia"))

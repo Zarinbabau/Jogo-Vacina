@@ -12,7 +12,12 @@ public class CorpoCentopeia : MonoBehaviour
     public float verticalDirection = -1f;
 
     private Vector3 targetPosition;
-    public int vidaSegmento; 
+    public int vidaSegmento;
+
+    [Header("Configurações de Áudio")]
+    public AudioSource AudioSource;       
+    public AudioClip batidaClip;        
+    public AudioClip virusMorteClip;    
 
     private void Awake()
     {
@@ -62,6 +67,12 @@ public class CorpoCentopeia : MonoBehaviour
 
         if (collisions.Length > 0)
         {
+            // Toca o som de batida quando colide com a collision mask
+            if (AudioSource != null && batidaClip != null)
+            {
+                AudioSource.PlayOneShot(batidaClip);
+            }
+
             targetPosition = gridPosition + new Vector3(0f, verticalDirection, 0f);
             direction.x = -direction.x;
 
@@ -116,9 +127,15 @@ public class CorpoCentopeia : MonoBehaviour
             // Reduz 1 de vida do segmento atingido
             vidaSegmento--;
 
-            // S� morre, divide-se e vira cogumelo se a vida esgotar
+            // Só morre, divide-se e vira cogumelo se a vida esgotar
             if (vidaSegmento <= 0)
             {
+                // Toca o som de morte instanciando-o no mundo, pois este GameObject será destruído
+                if (virusMorteClip != null)
+                {
+                    AudioSource.PlayClipAtPoint(virusMorteClip, transform.position);
+                }
+
                 centipede.Remove(this);
             }
         }
