@@ -5,7 +5,6 @@ TagManager:
   serializedVersion: 3
   tags:
   - enemie
-  - Tiro
   layers:
   - Default
   - TransparentFX
@@ -16,8 +15,8 @@ TagManager:
   - Barrier
   - Mushroom
   - Centopeia
-  - 
-  - 
+  - Tiro
+  - Player
   - 
   - 
   - 

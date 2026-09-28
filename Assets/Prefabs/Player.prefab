@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 3299970201947249605}
   - component: {fileID: 2250573981826740785}
   - component: {fileID: 667362231456791031}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -161,6 +161,7 @@ MonoBehaviour:
   tiroPrefab: {fileID: 3484114829951539542, guid: 5552a84d99cb3da4198eee91017fecd3, type: 3}
   pontoDeTiro: {fileID: 6527171509556953219}
   cooldown: 0.25
+  tempoInvulnerabilidade: 0.5
 --- !u!1 &1322042058924456939
 GameObject:
   m_ObjectHideFlags: 0
@@ -171,7 +172,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8640352241126523315}
   - component: {fileID: 7396336592063082989}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -261,7 +262,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6527171509556953219}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: pontoDeTiro
   m_TagString: Untagged
   m_Icon: {fileID: 0}

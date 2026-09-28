@@ -8,15 +8,15 @@ public class CorpoCentopeia : MonoBehaviour
 
     public bool isHead => ahead == null;
 
-    private Vector3 direction = Vector3.right;
-    private float verticalDirection = -1f;
+    public Vector3 direction = Vector3.right;
+    public float verticalDirection = -1f;
+
     private Vector3 targetPosition;
+    public int vidaSegmento = 2; // Pode ajustar diretamente no Inspector
 
     private void Awake()
     {
         targetPosition = transform.position;
-
-        // Garante que todo segmento (cabeça ou corpo) já nasça deitado
         transform.rotation = Quaternion.Euler(-90f, 0f, 0f);
     }
 
@@ -39,17 +39,15 @@ public class CorpoCentopeia : MonoBehaviour
 
         if (movementDirection.x > 0)
         {
-            // Indo para a direita: mantém X em -90 e Y em 0
             transform.rotation = Quaternion.Euler(-90f, 0f, 0f);
         }
         else if (movementDirection.x < 0)
         {
-            // Indo para a esquerda: mantém X em -90 e Y em 180
             transform.rotation = Quaternion.Euler(-90f, 180f, 0f);
         }
     }
 
-    private void UpdateHeadSegment()
+    public void UpdateHeadSegment()
     {
         Vector3 gridPosition = GridPosition(transform.position);
 
@@ -64,13 +62,9 @@ public class CorpoCentopeia : MonoBehaviour
 
         if (collisions.Length > 0)
         {
-            // Move 1 unidade no Y dependendo se está subindo ou descendo
             targetPosition = gridPosition + new Vector3(0f, verticalDirection, 0f);
-
-            // Inverte o sentido horizontal
             direction.x = -direction.x;
 
-            // Inverter o eixo Y quando bater nos limites do home
             Bounds homeBounds = centipede.homeArea.bounds;
 
             if ((verticalDirection == 1f && targetPosition.y > homeBounds.max.y) ||
@@ -81,8 +75,6 @@ public class CorpoCentopeia : MonoBehaviour
             }
         }
 
-        // Depois que terminou de descer,
-        // começa a andar horizontalmente no sentido oposto
         if (Vector3.Distance(transform.position, targetPosition) < 0.1f)
         {
             targetPosition = GridPosition(transform.position) + direction;
@@ -112,5 +104,23 @@ public class CorpoCentopeia : MonoBehaviour
         position.z = Mathf.Round(position.z);
 
         return position;
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.layer == LayerMask.NameToLayer("Tiro"))
+        {
+            other.enabled = false;
+            Destroy(other.gameObject);
+
+            // Reduz 1 de vida do segmento atingido
+            vidaSegmento--;
+
+            // Só morre, divide-se e vira cogumelo se a vida esgotar
+            if (vidaSegmento <= 0)
+            {
+                centipede.Remove(this);
+            }
+        }
     }
 }

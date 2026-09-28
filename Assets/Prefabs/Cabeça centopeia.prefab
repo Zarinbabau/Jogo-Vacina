@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1390160885347656321}
   - component: {fileID: 3904939486545273629}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -101,7 +101,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3820872361057389160}
   - component: {fileID: 8829859522352614811}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Square (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -195,7 +195,7 @@ GameObject:
   - component: {fileID: 8457651167712273952}
   - component: {fileID: 2913357117399240989}
   - component: {fileID: 2106235503287333823}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: "Cabe\xE7a centopeia"
   m_TagString: enemie
   m_Icon: {fileID: 0}
@@ -309,3 +309,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 44523e6b7e2ee4843862b9b0fa8c5436, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CorpoCentopeia
+  direction: {x: 1, y: 0, z: 0}
+  verticalDirection: -1
+  vidaSegmento: 1
