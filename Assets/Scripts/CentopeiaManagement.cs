@@ -50,7 +50,7 @@ public class CentopeiaManagement : MonoBehaviour
 
     public void Remove(CorpoCentopeia segment)
     {
-        // Calcula a posição do grid e trava o eixo Z em 0
+        // Calcula a posiï¿½ï¿½o do grid e trava o eixo Z em 0
         Vector3 position = GridPosition(segment.transform.position);
         position.z = 0f;
 
@@ -64,21 +64,21 @@ public class CentopeiaManagement : MonoBehaviour
             segment.ahead.behind = null;
         }
 
-        // O segmento de trás vira uma nova cabeça
+        // O segmento de trï¿½s vira uma nova cabeï¿½a
         if (segment.behind != null)
         {
             CorpoCentopeia oldBody = segment.behind;
             oldBody.ahead = null;
 
-            // Instancia a nova cabeça na posição exata do corpo antigo
+            // Instancia a nova cabeï¿½a na posiï¿½ï¿½o exata do corpo antigo
             GameObject newHeadObj = Instantiate(headPrefab, oldBody.transform.position, oldBody.transform.rotation);
             CorpoCentopeia newHeadScript = newHeadObj.GetComponent<CorpoCentopeia>();
 
-            // Transfere as lógicas e conexões
+            // Transfere as lï¿½gicas e conexï¿½es
             newHeadScript.centipede = this;
             newHeadScript.behind = oldBody.behind;
 
-            // HERANÇA VITAL: A nova cabeça mantém o fluxo da antiga
+            // HERANï¿½A VITAL: A nova cabeï¿½a mantï¿½m o fluxo da antiga
             newHeadScript.direction = oldBody.direction;
             newHeadScript.verticalDirection = oldBody.verticalDirection;
 
@@ -92,11 +92,11 @@ public class CentopeiaManagement : MonoBehaviour
             Destroy(oldBody.gameObject);
         }
 
-        // 5. Remove a peça original atingida
+        // 5. Remove a peï¿½a original atingida
         segments.Remove(segment.gameObject);
         Destroy(segment.gameObject);
 
-        // --- NOVO: Verifica se já não sobra nenhum segmento na lista ---
+        // --- NOVO: Verifica se jï¿½ nï¿½o sobra nenhum segmento na lista ---
         if (segments.Count == 0)
         {
             if (GameManager.instance != null)
