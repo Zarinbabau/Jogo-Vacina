@@ -121,8 +121,8 @@ public class CorpoCentopeia : MonoBehaviour
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Tiro"))
         {
-            // Busca o script ShellExplosion no filho da bala ANTES de qualquer coisa
-            ShellExplosion explosion = other.GetComponentInChildren<ShellExplosion>();
+            // Busca o script CentipedeExplosion no filho da bala ANTES de qualquer coisa
+            CentipedeExplosion explosion = other.GetComponentInChildren<CentipedeExplosion>();
 
             // Reduz 1 de vida do segmento atingido
             vidaSegmento--;

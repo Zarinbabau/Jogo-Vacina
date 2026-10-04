@@ -1,6 +1,6 @@
 using UnityEngine;
 
-public class ShellExplosion : MonoBehaviour
+public class CentipedeExplosion : MonoBehaviour
 {
     private ParticleSystem m_ExplosionParticles;
     private AudioSource m_ExplosionAudio;
