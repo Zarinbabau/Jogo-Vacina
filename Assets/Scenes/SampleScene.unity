@@ -340,7 +340,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   player: {fileID: 467671497}
   anguloMaximo: 10
-  velocidadeSuavidade: 3
+  velocidadeSuavidade: 2
   posicaoCentro: {x: 0, y: 0, z: -20}
   posicaoEsquerda: {x: -5, y: 0, z: -18}
   posicaoDireita: {x: 5, y: 0, z: -18}
