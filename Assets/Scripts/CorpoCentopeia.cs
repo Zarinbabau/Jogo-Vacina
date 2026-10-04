@@ -121,6 +121,9 @@ public class CorpoCentopeia : MonoBehaviour
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Tiro"))
         {
+            // Busca o script ShellExplosion no filho da bala antes de destruí-la
+            ShellExplosion explosion = other.GetComponentInChildren<ShellExplosion>();
+
             other.enabled = false;
             Destroy(other.gameObject);
 
@@ -130,7 +133,13 @@ public class CorpoCentopeia : MonoBehaviour
             // Só morre, divide-se e vira cogumelo se a vida esgotar
             if (vidaSegmento <= 0)
             {
-                // Toca o som de morte instanciando-o no mundo, pois este GameObject será destruído
+                // NOVO: Se encontrou o script, detona a explosão
+                if (explosion != null)
+                {
+                    explosion.Detonate();
+                }
+
+                // Toca o som de morte instanciando-o no mundo
                 if (virusMorteClip != null)
                 {
                     AudioSource.PlayClipAtPoint(virusMorteClip, transform.position);

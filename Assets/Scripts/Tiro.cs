@@ -39,7 +39,14 @@ public class Tiro : MonoBehaviour
             Destroy(other.gameObject);
         }
 
-        // 3. Independentemente de ser cogumelo, parede ou centopeia, a bala destrói-se ao bater
+        // NOVO: Se bater na Centopeia, interrompe o código aqui. 
+        // O script CorpoCentopeia.cs será o responsável por destruir a bala.
+        if (layerBateu == LayerMask.NameToLayer("Centopeia"))
+        {
+            return;
+        }
+
+        // 3. Independentemente de ser cogumelo ou parede, a bala destrói-se ao bater
         Destroy(gameObject);
     }
 

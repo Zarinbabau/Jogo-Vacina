@@ -1,11 +1,14 @@
-using System.Collections; // Necessrio para usar Coroutines
+using System.Collections; // Necessário para usar Coroutines
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
     private new Rigidbody rigidbody;
     private Collider playerCollider;
-    private Renderer playerRenderer; // Controla a visibilidade do modelo 3D
+
+    // Substituímos o Renderer único por um array de Renderers
+    private Renderer[] renderers;
+
     private Vector2 direction;
 
     public float speed = 20f;
@@ -25,12 +28,8 @@ public class Player : MonoBehaviour
         rigidbody = GetComponent<Rigidbody>();
         playerCollider = GetComponent<Collider>();
 
-        // Pega o renderizador (se o modelo 3D for filho do objeto principal, use GetComponentInChildren<Renderer>())
-        playerRenderer = GetComponent<Renderer>();
-        if (playerRenderer == null)
-        {
-            playerRenderer = GetComponentInChildren<Renderer>();
-        }
+        // Pega todos os renderizadores no Player E nos objetos filhos (como o Quad)
+        renderers = GetComponentsInChildren<Renderer>();
     }
 
     private void Update()
@@ -72,7 +71,6 @@ public class Player : MonoBehaviour
     // Deteta o impacto com a centopeia
     private void OnCollisionEnter(Collision collision)
     {
-        // Se bater na centopeia e N�O estiver invulner�vel
         if (!isInvulneravel && collision.gameObject.layer == LayerMask.NameToLayer("Centopeia"))
         {
             ReceberDano();
@@ -90,7 +88,12 @@ public class Player : MonoBehaviour
     private void ReceberDano()
     {
         GameManager.instance.PerderVida();
-        StartCoroutine(RotinaInvulnerabilidade());
+
+        // Só inicia a corotina de piscar se o GameManager não tiver desativado o Player
+        if (this.gameObject.activeInHierarchy)
+        {
+            StartCoroutine(RotinaInvulnerabilidade());
+        }
     }
 
     // Rotina que faz o jogador piscar e controla o tempo de invulnerabilidade
@@ -102,16 +105,28 @@ public class Player : MonoBehaviour
         // Enquanto nao passar os 0.5 segundos...
         while (tempoPassado < tempoInvulnerabilidade)
         {
-            // Inverte a visibilidade do modelo (se est� vis�vel, esconde; se est� escondido, mostra)
-            playerRenderer.enabled = !playerRenderer.enabled;
+            // Inverte a visibilidade de todos os renderizadores encontrados (Player e Quad)
+            foreach (Renderer r in renderers)
+            {
+                if (r != null)
+                {
+                    r.enabled = !r.enabled;
+                }
+            }
 
             // Espera 0.1 segundos antes de piscar de novo
             yield return new WaitForSeconds(0.1f);
             tempoPassado += 0.1f;
         }
 
-        // Garante que no final ele fica visivel e vulneravel novamente
-        playerRenderer.enabled = true;
+        // Garante que no final todos fiquem visiveis e vulneraveis novamente
+        foreach (Renderer r in renderers)
+        {
+            if (r != null)
+            {
+                r.enabled = true;
+            }
+        }
         isInvulneravel = false;
     }
 }
