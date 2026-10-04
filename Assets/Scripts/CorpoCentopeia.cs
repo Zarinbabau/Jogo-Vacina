@@ -121,25 +121,22 @@ public class CorpoCentopeia : MonoBehaviour
     {
         if (other.gameObject.layer == LayerMask.NameToLayer("Tiro"))
         {
-            // Busca o script ShellExplosion no filho da bala antes de destruí-la
+            // Busca o script ShellExplosion no filho da bala ANTES de qualquer coisa
             ShellExplosion explosion = other.GetComponentInChildren<ShellExplosion>();
-
-            other.enabled = false;
-            Destroy(other.gameObject);
 
             // Reduz 1 de vida do segmento atingido
             vidaSegmento--;
 
-            // Só morre, divide-se e vira cogumelo se a vida esgotar
+            // Se a vida esgotar, detona e morre
             if (vidaSegmento <= 0)
             {
-                // NOVO: Se encontrou o script, detona a explosão
+                // Detona a explosão ANTES do tiro ser destruído
                 if (explosion != null)
                 {
                     explosion.Detonate();
                 }
 
-                // Toca o som de morte instanciando-o no mundo
+                // Toca o som de morte do vírus
                 if (virusMorteClip != null)
                 {
                     AudioSource.PlayClipAtPoint(virusMorteClip, transform.position);
@@ -147,6 +144,10 @@ public class CorpoCentopeia : MonoBehaviour
 
                 centipede.Remove(this);
             }
+
+            // AGORA SIM, depois de ter detonado, desativamos e destruímos o tiro
+            other.enabled = false;
+            Destroy(other.gameObject);
         }
     }
 }
