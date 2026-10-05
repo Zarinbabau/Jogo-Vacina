@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class GameManager : MonoBehaviour
@@ -7,14 +8,17 @@ public class GameManager : MonoBehaviour
     private Player player;
     private CentopeiaManagement centipedeManager;
     private MushroomField mushroomField;
-
-    private int score;
     private int lives;
 
     public float tempoMaximo = 300f; // 5 minutos em segundos
     private float tempoRestante;
 
     private Vector3 playerOriginalPosition;
+
+    
+
+    [SerializeField] public int score;
+    public event Action<int> OnScoreChanged;
 
     private void Awake()
     {
@@ -74,7 +78,7 @@ public class GameManager : MonoBehaviour
     {
         CancelInvoke(nameof(NewGame));
 
-        score = 0;
+       
         lives = 3;
         tempoRestante = tempoMaximo;
 
@@ -101,17 +105,17 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // NOVO: Chamado quando a centopeia é totalmente destruída
+    // NOVO: Chamado quando a centopeia ï¿½ totalmente destruï¿½da
     public void CentopeiaDerrotada()
     {
         if (player != null)
         {
-            player.gameObject.SetActive(false); // Opcional: trava o player ao limpar o nível
+            player.gameObject.SetActive(false); // Opcional: trava o player ao limpar o nï¿½vel
         }
 
-        Debug.Log("Centopeia eliminada! Irá reiniciar o nível em 3 segundos.");
+        Debug.Log("Centopeia eliminada! Irï¿½ reiniciar o nï¿½vel em 3 segundos.");
 
-        // Reutiliza exatamente a mesma lógica de espera de 3 segundos
+        // Reutiliza exatamente a mesma lï¿½gica de espera de 3 segundos
         Invoke(nameof(NewGame), 3f);
     }
 
@@ -125,5 +129,11 @@ public class GameManager : MonoBehaviour
         Debug.Log("Game Over! O jogo vai reiniciar em 3 segundos.");
 
         Invoke(nameof(NewGame), 3f);
+    }
+
+    public void AddScore(int amount)
+    {
+        score += amount;
+        OnScoreChanged?.Invoke(score);
     }
 }

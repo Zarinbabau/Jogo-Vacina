@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CentopeiaManagement : MonoBehaviour
@@ -14,6 +15,8 @@ public class CentopeiaManagement : MonoBehaviour
 
     public BoxCollider homeArea;
     public LayerMask collisionMask;
+
+    [SerializeField] private int rewardScore = 100;
 
     public void Respawn()
     {
@@ -95,6 +98,7 @@ public class CentopeiaManagement : MonoBehaviour
         // 5. Remove a pe�a original atingida
         segments.Remove(segment.gameObject);
         Destroy(segment.gameObject);
+        die();
 
         // --- NOVO: Verifica se j� n�o sobra nenhum segmento na lista ---
         if (segments.Count == 0)
@@ -121,5 +125,13 @@ public class CentopeiaManagement : MonoBehaviour
         position.y = Mathf.Round(position.y);
         position.z = Mathf.Round(position.z);
         return position;
+    }
+
+    private void die()
+    {
+        if (GameManager.instance != null)
+        {
+            GameManager.instance.AddScore(rewardScore);
+        }
     }
 }

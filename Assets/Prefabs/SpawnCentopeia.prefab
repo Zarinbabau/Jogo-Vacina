@@ -46,8 +46,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CentopeiaManagement
   headPrefab: {fileID: 7814367118471991833, guid: 73eb081315c84824888fd4a08399e46e, type: 3}
   bodyPrefab: {fileID: 749052827797067791, guid: 86b8ad3c8b03dc34b9bcd3f26c507370, type: 3}
+  mushroomPrefab: {fileID: 7094553220556312119, guid: b86cd5a8173e39d49b6f9e6d6e203d6a, type: 3}
   speed: 5
   size: 12
+  homeArea: {fileID: 8481758391238583866, guid: e47d8a448cf919d4abb5b061af774140, type: 3}
   collisionMask:
     serializedVersion: 2
-    m_Bits: 192
+    m_Bits: 448
