@@ -16,8 +16,6 @@ public class CentopeiaManagement : MonoBehaviour
     public BoxCollider homeArea;
     public LayerMask collisionMask;
 
-    [SerializeField] private int rewardScore = 100;
-
     public void Respawn()
     {
         foreach (GameObject segment in segments)
@@ -53,7 +51,7 @@ public class CentopeiaManagement : MonoBehaviour
 
     public void Remove(CorpoCentopeia segment)
     {
-        // Calcula a posi��o do grid e trava o eixo Z em 0
+        // Calcula a posição do grid e trava o eixo Z em 0
         Vector3 position = GridPosition(segment.transform.position);
         position.z = 0f;
 
@@ -67,21 +65,21 @@ public class CentopeiaManagement : MonoBehaviour
             segment.ahead.behind = null;
         }
 
-        // O segmento de tr�s vira uma nova cabe�a
+        // O segmento de trás vira uma nova cabeça
         if (segment.behind != null)
         {
             CorpoCentopeia oldBody = segment.behind;
             oldBody.ahead = null;
 
-            // Instancia a nova cabe�a na posi��o exata do corpo antigo
+            // Instancia a nova cabeça na posição exata do corpo antigo
             GameObject newHeadObj = Instantiate(headPrefab, oldBody.transform.position, oldBody.transform.rotation);
             CorpoCentopeia newHeadScript = newHeadObj.GetComponent<CorpoCentopeia>();
 
-            // Transfere as l�gicas e conex�es
+            // Transfere as lógicas e conexões
             newHeadScript.centipede = this;
             newHeadScript.behind = oldBody.behind;
 
-            // HERAN�A VITAL: A nova cabe�a mant�m o fluxo da antiga
+            // HERANÇA VITAL: A nova cabeça mantém o fluxo da antiga
             newHeadScript.direction = oldBody.direction;
             newHeadScript.verticalDirection = oldBody.verticalDirection;
 
@@ -95,12 +93,19 @@ public class CentopeiaManagement : MonoBehaviour
             Destroy(oldBody.gameObject);
         }
 
-        // 5. Remove a pe�a original atingida
+        // 5. Remove a peça original atingida
         segments.Remove(segment.gameObject);
         Destroy(segment.gameObject);
-        die();
 
-        // --- NOVO: Verifica se j� n�o sobra nenhum segmento na lista ---
+        // --- NOVA LÓGICA DE PONTUAÇÃO ---
+        if (GameManager.instance != null)
+        {
+            // Se for cabeça vale 150, se for corpo vale 100
+            int scorePoints = segment.isHead ? 150 : 100;
+            GameManager.instance.AddScore(scorePoints);
+        }
+
+        // --- NOVO: Verifica se já não sobra nenhum segmento na lista ---
         if (segments.Count == 0)
         {
             if (GameManager.instance != null)
@@ -125,13 +130,5 @@ public class CentopeiaManagement : MonoBehaviour
         position.y = Mathf.Round(position.y);
         position.z = Mathf.Round(position.z);
         return position;
-    }
-
-    private void die()
-    {
-        if (GameManager.instance != null)
-        {
-            GameManager.instance.AddScore(rewardScore);
-        }
     }
 }
