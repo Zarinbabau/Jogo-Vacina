@@ -6,18 +6,80 @@ public class CentopeiaManagement : MonoBehaviour
 {
     private List<GameObject> segments = new List<GameObject>();
 
+    [Header("Prefabs")]
     public GameObject headPrefab;
     public GameObject bodyPrefab;
     public GameObject mushroomPrefab;
 
+    [Header("Configurações Iniciais")]
     public float speed = 1f;
     public int size = 12;
 
     public BoxCollider homeArea;
     public LayerMask collisionMask;
 
+    [Header("Configurações de Dificuldade (Por Onda)")]
+    [Tooltip("Valor somado à velocidade da centopeia a cada nova onda.")]
+    public float aumentoDeVelocidade = 1.5f;
+
+    [Tooltip("Quantidade de segmentos adicionados à centopeia a cada nova onda.")]
+    public int aumentoDeTamanho = 2;
+
+    [Tooltip("Multiplicador da vida da centopeia a cada nova onda (Ex: 1.05 = +5%).")]
+    public float multiplicadorDeVida = 1.05f;
+
+    // --- VARIÁVEIS DE CONTROLE INTERNO ---
+    private float originalSpeed;
+    private int originalSize;
+    private float originalHealth = 1f; // Valor padrão inicial
+    private float currentHealth;
+    private bool initialized = false;
+
+    // Salva os valores que você definiu no Unity Inspector para usar de base
+    private void InitializeStats()
+    {
+        if (!initialized)
+        {
+            originalSpeed = speed;
+            originalSize = size;
+
+            // Pega a vida original diretamente do prefab do corpo
+            if (bodyPrefab != null)
+            {
+                CorpoCentopeia corpo = bodyPrefab.GetComponent<CorpoCentopeia>();
+                if (corpo != null)
+                {
+                    originalHealth = corpo.vidaSegmento;
+                }
+            }
+
+            currentHealth = originalHealth;
+            initialized = true;
+        }
+    }
+
+    // Volta os valores ao normal se o tempo acabar ou o jogador perder todas as vidas
+    public void ResetarDificuldade()
+    {
+        InitializeStats();
+        speed = originalSpeed;
+        size = originalSize;
+        currentHealth = originalHealth;
+    }
+
+    // Aumenta a força da centopeia usando as variáveis públicas definidas no Inspector
+    public void AumentarDificuldade()
+    {
+        speed += aumentoDeVelocidade;
+        size += aumentoDeTamanho;
+        currentHealth *= multiplicadorDeVida;
+    }
+
     public void Respawn()
     {
+        // Garante que os status iniciais foram capturados
+        if (!initialized) InitializeStats();
+
         foreach (GameObject segment in segments)
         {
             Destroy(segment);
@@ -38,6 +100,10 @@ public class CentopeiaManagement : MonoBehaviour
 
             CorpoCentopeia corpo = segment.GetComponent<CorpoCentopeia>();
             corpo.centipede = this;
+
+            // Aplica a vida multiplicada (arredondando para int, garantindo no mínimo 1 de vida)
+            corpo.vidaSegmento = Mathf.Max(1, Mathf.RoundToInt(currentHealth));
+
             segments.Add(segment);
         }
 
@@ -83,6 +149,9 @@ public class CentopeiaManagement : MonoBehaviour
             newHeadScript.direction = oldBody.direction;
             newHeadScript.verticalDirection = oldBody.verticalDirection;
 
+            // Herda a vida do segmento anterior para que não volte a ter a vida cheia caso já estivesse danificado
+            newHeadScript.vidaSegmento = oldBody.vidaSegmento;
+
             if (newHeadScript.behind != null)
             {
                 newHeadScript.behind.ahead = newHeadScript;
@@ -97,15 +166,14 @@ public class CentopeiaManagement : MonoBehaviour
         segments.Remove(segment.gameObject);
         Destroy(segment.gameObject);
 
-        // --- NOVA LÓGICA DE PONTUAÇÃO ---
+        // LÓGICA DE PONTUAÇÃO (150 Cabeça / 100 Corpo)
         if (GameManager.instance != null)
         {
-            // Se for cabeça vale 150, se for corpo vale 100
             int scorePoints = segment.isHead ? 150 : 100;
             GameManager.instance.AddScore(scorePoints);
         }
 
-        // --- NOVO: Verifica se já não sobra nenhum segmento na lista ---
+        // Verifica se já não sobra nenhum segmento na lista
         if (segments.Count == 0)
         {
             if (GameManager.instance != null)

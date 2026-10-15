@@ -13,12 +13,15 @@ public class GameManager : MonoBehaviour
     public float tempoMaximo = 300f; // 5 minutos em segundos
     private float tempoRestante;
 
+    // NOVO: Propriedade pública para ler o tempo se necessário
+    public float TempoRestante => tempoRestante;
+
     private Vector3 playerOriginalPosition;
 
-    
-
     [SerializeField] public int score;
+
     public event Action<int> OnScoreChanged;
+    public event Action<float> OnTimeChanged; // NOVO: Evento para avisar o UIManager
 
     private void Awake()
     {
@@ -60,9 +63,13 @@ public class GameManager : MonoBehaviour
         {
             tempoRestante -= Time.deltaTime;
 
+            // NOVO: Atualiza o tempo na UI a cada frame
+            OnTimeChanged?.Invoke(tempoRestante);
+
             if (tempoRestante <= 0)
             {
                 tempoRestante = 0;
+                OnTimeChanged?.Invoke(tempoRestante); // Garante que o texto mostre 00:00
                 lives = 0;
                 GameOver();
             }
@@ -77,12 +84,22 @@ public class GameManager : MonoBehaviour
     private void NewGame()
     {
         CancelInvoke(nameof(NewGame));
+        CancelInvoke(nameof(ProximaOnda));
 
-       
         lives = 3;
         tempoRestante = tempoMaximo;
 
-        centipedeManager.Respawn();
+        score = 0;
+        OnScoreChanged?.Invoke(score);
+
+        // NOVO: Atualiza a UI do tempo assim que o jogo começar
+        OnTimeChanged?.Invoke(tempoRestante);
+
+        if (centipedeManager != null)
+        {
+            centipedeManager.ResetarDificuldade();
+            centipedeManager.Respawn();
+        }
 
         if (player != null)
         {
@@ -90,8 +107,11 @@ public class GameManager : MonoBehaviour
             player.gameObject.SetActive(true);
         }
 
-        mushroomField.Clear();
-        mushroomField.Generate();
+        if (mushroomField != null)
+        {
+            mushroomField.Clear();
+            mushroomField.Generate();
+        }
     }
 
     public void PerderVida()
@@ -105,18 +125,30 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // NOVO: Chamado quando a centopeia � totalmente destru�da
     public void CentopeiaDerrotada()
     {
         if (player != null)
         {
-            player.gameObject.SetActive(false); // Opcional: trava o player ao limpar o n�vel
+            player.gameObject.SetActive(false);
         }
 
-        Debug.Log("Centopeia eliminada! Ir� reiniciar o n�vel em 3 segundos.");
+        Debug.Log("Centopeia eliminada! Próxima onda em 3 segundos.");
+        Invoke(nameof(ProximaOnda), 3f);
+    }
 
-        // Reutiliza exatamente a mesma l�gica de espera de 3 segundos
-        Invoke(nameof(NewGame), 3f);
+    private void ProximaOnda()
+    {
+        if (player != null)
+        {
+            player.transform.position = playerOriginalPosition;
+            player.gameObject.SetActive(true);
+        }
+
+        if (centipedeManager != null)
+        {
+            centipedeManager.AumentarDificuldade();
+            centipedeManager.Respawn();
+        }
     }
 
     private void GameOver()
@@ -127,7 +159,6 @@ public class GameManager : MonoBehaviour
         }
 
         Debug.Log("Game Over! O jogo vai reiniciar em 3 segundos.");
-
         Invoke(nameof(NewGame), 3f);
     }
 
