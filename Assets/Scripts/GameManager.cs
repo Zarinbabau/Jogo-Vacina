@@ -10,10 +10,12 @@ public class GameManager : MonoBehaviour
     private MushroomField mushroomField;
     private int lives;
 
+    // NOVO: Propriedade pública para as vidas
+    public int Lives => lives;
+
     public float tempoMaximo = 300f; // 5 minutos em segundos
     private float tempoRestante;
 
-    // NOVO: Propriedade pública para ler o tempo se necessário
     public float TempoRestante => tempoRestante;
 
     private Vector3 playerOriginalPosition;
@@ -21,7 +23,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] public int score;
 
     public event Action<int> OnScoreChanged;
-    public event Action<float> OnTimeChanged; // NOVO: Evento para avisar o UIManager
+    public event Action<float> OnTimeChanged;
+
+    // NOVO: Evento para avisar o UIManager sobre as vidas
+    public event Action<int> OnLivesChanged;
 
     private void Awake()
     {
@@ -63,14 +68,14 @@ public class GameManager : MonoBehaviour
         {
             tempoRestante -= Time.deltaTime;
 
-            // NOVO: Atualiza o tempo na UI a cada frame
             OnTimeChanged?.Invoke(tempoRestante);
 
             if (tempoRestante <= 0)
             {
                 tempoRestante = 0;
-                OnTimeChanged?.Invoke(tempoRestante); // Garante que o texto mostre 00:00
+                OnTimeChanged?.Invoke(tempoRestante);
                 lives = 0;
+                OnLivesChanged?.Invoke(lives); // NOVO: Atualiza a UI das vidas ao zerar o tempo
                 GameOver();
             }
         }
@@ -87,12 +92,14 @@ public class GameManager : MonoBehaviour
         CancelInvoke(nameof(ProximaOnda));
 
         lives = 3;
+
+        // NOVO: Atualiza a UI das vidas assim que o jogo começar
+        OnLivesChanged?.Invoke(lives);
+
         tempoRestante = tempoMaximo;
 
         score = 0;
         OnScoreChanged?.Invoke(score);
-
-        // NOVO: Atualiza a UI do tempo assim que o jogo começar
         OnTimeChanged?.Invoke(tempoRestante);
 
         if (centipedeManager != null)
@@ -117,6 +124,9 @@ public class GameManager : MonoBehaviour
     public void PerderVida()
     {
         lives--;
+
+        // NOVO: Avisa a UI que uma vida foi perdida
+        OnLivesChanged?.Invoke(lives);
 
         if (lives <= 0)
         {

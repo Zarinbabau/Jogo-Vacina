@@ -1,4 +1,4 @@
-using System.Collections; // Necessário para usar Coroutines
+using System.Collections;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -6,7 +6,6 @@ public class Player : MonoBehaviour
     private new Rigidbody rigidbody;
     private Collider playerCollider;
 
-    // Substituímos o Renderer único por um array de Renderers
     private Renderer[] renderers;
 
     private Vector2 direction;
@@ -23,17 +22,44 @@ public class Player : MonoBehaviour
     private bool isInvulneravel = false;
     public float tempoInvulnerabilidade = 0.5f;
 
+    [Header("Efeitos Sonoros")]
+    [Tooltip("Arraste o AudioSource 'hurt_player' aqui")]
+    [SerializeField] private AudioSource hurtAudioSource;
+
+    [Tooltip("Arraste o ARQUIVO de áudio da morte aqui")]
+    [SerializeField] private AudioClip deathSoundClip;
+
+    [Tooltip("Aumente este valor se o som da morte estiver muito baixo")]
+    [Range(0f, 5f)]
+    [SerializeField] private float deathVolume = 1f;
+
     private void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
         playerCollider = GetComponent<Collider>();
-
-        // Pega todos os renderizadores no Player E nos objetos filhos (como o Quad)
         renderers = GetComponentsInChildren<Renderer>();
+    }
+
+    // Garante que, ao reiniciar o jogo, o player volte a ter colisão e fique visível
+    private void OnEnable()
+    {
+        isInvulneravel = false;
+        if (playerCollider != null) playerCollider.enabled = true;
+
+        if (renderers != null)
+        {
+            foreach (Renderer r in renderers)
+            {
+                if (r != null) r.enabled = true;
+            }
+        }
     }
 
     private void Update()
     {
+        // Se estiver "morto" tocando o som, impede de atirar
+        if (playerCollider != null && !playerCollider.enabled) return;
+
         direction.x = Input.GetAxis("Horizontal");
         direction.y = Input.GetAxis("Vertical");
 
@@ -58,6 +84,9 @@ public class Player : MonoBehaviour
 
     private void FixedUpdate()
     {
+        // Se estiver "morto" tocando o som, impede de se mover
+        if (playerCollider != null && !playerCollider.enabled) return;
+
         Vector2 position = rigidbody.position;
 
         position += direction.normalized * speed * Time.fixedDeltaTime;
@@ -68,7 +97,6 @@ public class Player : MonoBehaviour
         rigidbody.MovePosition(position);
     }
 
-    // Deteta o impacto com a centopeia
     private void OnCollisionEnter(Collision collision)
     {
         if (!isInvulneravel && collision.gameObject.layer == LayerMask.NameToLayer("Centopeia"))
@@ -87,25 +115,60 @@ public class Player : MonoBehaviour
 
     private void ReceberDano()
     {
-        GameManager.instance.PerderVida();
-
-        // Só inicia a corotina de piscar se o GameManager não tiver desativado o Player
-        if (this.gameObject.activeInHierarchy)
+        if (GameManager.instance.Lives <= 1)
         {
-            StartCoroutine(RotinaInvulnerabilidade());
+            StartCoroutine(TocarSomEMorrer());
+        }
+        else
+        {
+            if (hurtAudioSource != null)
+            {
+                hurtAudioSource.Play();
+            }
+
+            GameManager.instance.PerderVida();
+
+            if (this.gameObject.activeInHierarchy)
+            {
+                StartCoroutine(RotinaInvulnerabilidade());
+            }
         }
     }
 
-    // Rotina que faz o jogador piscar e controla o tempo de invulnerabilidade
+    private IEnumerator TocarSomEMorrer()
+    {
+        isInvulneravel = true;
+        if (playerCollider != null) playerCollider.enabled = false;
+
+        foreach (Renderer r in renderers)
+        {
+            if (r != null) r.enabled = false;
+        }
+
+        float tempoDeEspera = 0.5f;
+        if (deathSoundClip != null && hurtAudioSource != null)
+        {
+            hurtAudioSource.PlayOneShot(deathSoundClip, deathVolume);
+            tempoDeEspera = deathSoundClip.length;
+        }
+        else if (deathSoundClip != null)
+        {
+            AudioSource.PlayClipAtPoint(deathSoundClip, Camera.main.transform.position, deathVolume);
+            tempoDeEspera = deathSoundClip.length;
+        }
+
+        yield return new WaitForSeconds(tempoDeEspera);
+
+        GameManager.instance.PerderVida();
+    }
+
     private IEnumerator RotinaInvulnerabilidade()
     {
         isInvulneravel = true;
         float tempoPassado = 0f;
 
-        // Enquanto nao passar os 0.5 segundos...
         while (tempoPassado < tempoInvulnerabilidade)
         {
-            // Inverte a visibilidade de todos os renderizadores encontrados (Player e Quad)
             foreach (Renderer r in renderers)
             {
                 if (r != null)
@@ -114,12 +177,10 @@ public class Player : MonoBehaviour
                 }
             }
 
-            // Espera 0.1 segundos antes de piscar de novo
             yield return new WaitForSeconds(0.1f);
             tempoPassado += 0.1f;
         }
 
-        // Garante que no final todos fiquem visiveis e vulneraveis novamente
         foreach (Renderer r in renderers)
         {
             if (r != null)

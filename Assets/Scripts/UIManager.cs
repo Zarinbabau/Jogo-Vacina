@@ -4,9 +4,18 @@ using UnityEngine;
 public class UIManager : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI scoretext;
-
-    // NOVO: Variável para receber o seu objeto TextMeshPro "Timer"
     [SerializeField] private TextMeshProUGUI timerText;
+
+    // NOVO: Referências para as imagens de vida
+    [Header("Imagens de Vida")]
+    [Tooltip("Coloque a imagem 'coração' aqui")]
+    [SerializeField] private GameObject vida1;
+
+    [Tooltip("Coloque a imagem 'coração (1)' aqui")]
+    [SerializeField] private GameObject vida2;
+
+    [Tooltip("Coloque a imagem 'coração (2)' aqui")]
+    [SerializeField] private GameObject vida3;
 
     void Start()
     {
@@ -17,13 +26,15 @@ public class UIManager : MonoBehaviour
     {
         if (GameManager.instance != null)
         {
-            // Eventos de Score
             GameManager.instance.OnScoreChanged -= UpdateScoreText;
             GameManager.instance.OnScoreChanged += UpdateScoreText;
 
-            // NOVO: Eventos de Tempo
             GameManager.instance.OnTimeChanged -= UpdateTimerText;
             GameManager.instance.OnTimeChanged += UpdateTimerText;
+
+            // NOVO: Eventos de Vida
+            GameManager.instance.OnLivesChanged -= UpdateLivesUI;
+            GameManager.instance.OnLivesChanged += UpdateLivesUI;
         }
     }
 
@@ -32,9 +43,10 @@ public class UIManager : MonoBehaviour
         if (GameManager.instance != null)
         {
             UpdateScoreText(GameManager.instance.score);
-
-            // NOVO: Força atualizar o tempo caso seja chamado
             UpdateTimerText(GameManager.instance.TempoRestante);
+
+            // NOVO: Força atualizar as vidas caso seja chamado
+            UpdateLivesUI(GameManager.instance.Lives);
         }
     }
 
@@ -46,17 +58,27 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    // NOVO: Método que recebe os segundos e formata para a interface
     private void UpdateTimerText(float tempoEmSegundos)
     {
         if (timerText != null)
         {
-            // Calcula os minutos e segundos arredondando para baixo
             int minutos = Mathf.FloorToInt(tempoEmSegundos / 60);
             int segundos = Mathf.FloorToInt(tempoEmSegundos % 60);
 
-            // Formata o texto para sempre exibir 2 dígitos (ex: 05:09)
             timerText.text = string.Format("{0:00}:{1:00}", minutos, segundos);
         }
+    }
+
+    // NOVO: Método para ligar/desligar os corações de acordo com a vida atual
+    private void UpdateLivesUI(int currentLives)
+    {
+        // Se a vida for maior ou igual a 1, o coração 1 fica ativo, senão desativa.
+        if (vida1 != null) vida1.SetActive(currentLives >= 1);
+
+        // Se a vida for maior ou igual a 2, o coração 2 fica ativo, senão desativa.
+        if (vida2 != null) vida2.SetActive(currentLives >= 2);
+
+        // Se a vida for 3, o coração 3 fica ativo, senão desativa.
+        if (vida3 != null) vida3.SetActive(currentLives >= 3);
     }
 }
