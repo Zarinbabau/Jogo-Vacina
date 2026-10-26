@@ -137,23 +137,14 @@ public class GameManager : MonoBehaviour
 
     public void CentopeiaDerrotada()
     {
-        if (player != null)
-        {
-            player.gameObject.SetActive(false);
-        }
-
+        
         Debug.Log("Centopeia eliminada! Próxima onda em 3 segundos.");
         Invoke(nameof(ProximaOnda), 3f);
     }
 
     private void ProximaOnda()
     {
-        if (player != null)
-        {
-            player.transform.position = playerOriginalPosition;
-            player.gameObject.SetActive(true);
-        }
-
+        
         if (centipedeManager != null)
         {
             centipedeManager.AumentarDificuldade();
