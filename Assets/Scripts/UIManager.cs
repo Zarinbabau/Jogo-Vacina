@@ -54,7 +54,7 @@ public class UIManager : MonoBehaviour
     {
         if (scoretext != null)
         {
-            scoretext.text = $"Score: {newScore}";
+            scoretext.text = $"{newScore}";
         }
     }
 
