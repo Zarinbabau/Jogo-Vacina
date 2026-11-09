@@ -6,7 +6,10 @@ public class Player : MonoBehaviour
     private new Rigidbody rigidbody;
     private Collider playerCollider;
 
-    // Substituímos o Renderer único por um array de Renderers
+    // Referência para o Animator (agora busca também nos filhos)
+    private Animator animator;
+
+    // Array de Renderers nos filhos
     private Renderer[] renderers;
 
     private Vector2 direction;
@@ -27,8 +30,15 @@ public class Player : MonoBehaviour
     {
         rigidbody = GetComponent<Rigidbody>();
         playerCollider = GetComponent<Collider>();
+        
+        // CORREÇÃO: Usa GetComponentInChildren para encontrar o Animator no objeto filho (modelo 3D)
+        animator = GetComponentInChildren<Animator>();
+        if (animator == null)
+        {
+            Debug.LogWarning("Animator não encontrado nos filhos do Player!");
+        }
 
-        // Pega todos os renderizadores no Player E nos objetos filhos (como o Quad)
+        // Pega todos os renderizadores no objeto e nos filhos
         renderers = GetComponentsInChildren<Renderer>();
     }
 
@@ -37,8 +47,21 @@ public class Player : MonoBehaviour
         direction.x = Input.GetAxis("Horizontal");
         direction.y = Input.GetAxis("Vertical");
 
+        // Atualiza o parâmetro booleano de movimento no Animator
+        bool moving = direction.sqrMagnitude > 0.01f;
+        if (animator != null)
+        {
+            animator.SetBool("isMoving", moving);
+        }
+
         if (Input.GetButtonDown("Fire1") && tempoAtual <= 0)
         {
+            // Dispara a animação de tiro
+            if (animator != null)
+            {
+                animator.SetTrigger("isShooting");
+            }
+
             GameObject tiro = Instantiate(tiroPrefab, pontoDeTiro.position, pontoDeTiro.rotation);
 
             Collider tiroCollider = tiro.GetComponent<Collider>();
@@ -89,23 +112,19 @@ public class Player : MonoBehaviour
     {
         GameManager.instance.PerderVida();
 
-        // Só inicia a corotina de piscar se o GameManager não tiver desativado o Player
         if (this.gameObject.activeInHierarchy)
         {
             StartCoroutine(RotinaInvulnerabilidade());
         }
     }
 
-    // Rotina que faz o jogador piscar e controla o tempo de invulnerabilidade
     private IEnumerator RotinaInvulnerabilidade()
     {
         isInvulneravel = true;
         float tempoPassado = 0f;
 
-        // Enquanto nao passar os 0.5 segundos...
         while (tempoPassado < tempoInvulnerabilidade)
         {
-            // Inverte a visibilidade de todos os renderizadores encontrados (Player e Quad)
             foreach (Renderer r in renderers)
             {
                 if (r != null)
@@ -114,12 +133,10 @@ public class Player : MonoBehaviour
                 }
             }
 
-            // Espera 0.1 segundos antes de piscar de novo
             yield return new WaitForSeconds(0.1f);
             tempoPassado += 0.1f;
         }
 
-        // Garante que no final todos fiquem visiveis e vulneraveis novamente
         foreach (Renderer r in renderers)
         {
             if (r != null)

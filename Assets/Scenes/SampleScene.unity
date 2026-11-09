@@ -1018,8 +1018,8 @@ MonoBehaviour:
   m_ShadowLayerMask: 1
   m_RenderingLayers: 1
   m_ShadowRenderingLayers: 1
---- !u!4 &467671497 stripped
-Transform:
+--- !u!224 &467671497 stripped
+RectTransform:
   m_CorrespondingSourceObject: {fileID: 852004789296514191, guid: b283b9ee22670144fa8db1b6d4e9513e, type: 3}
   m_PrefabInstance: {fileID: 566827839}
   m_PrefabAsset: {fileID: 0}
@@ -1053,7 +1053,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 852004789296514191, guid: b283b9ee22670144fa8db1b6d4e9513e, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -2.75
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 852004789296514191, guid: b283b9ee22670144fa8db1b6d4e9513e, type: 3}
       propertyPath: m_LocalPosition.z
