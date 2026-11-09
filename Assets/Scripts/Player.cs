@@ -6,6 +6,9 @@ public class Player : MonoBehaviour
     private new Rigidbody rigidbody;
     private Collider playerCollider;
 
+    // Referência para o Animator (busca nos filhos já que está num EmptyParent)
+    private Animator animator;
+
     private Renderer[] renderers;
 
     private Vector2 direction;
@@ -37,6 +40,14 @@ public class Player : MonoBehaviour
     {
         rigidbody = GetComponent<Rigidbody>();
         playerCollider = GetComponent<Collider>();
+        
+        // Obtém o Animator no objeto filho (modelo 3D)
+        animator = GetComponentInChildren<Animator>();
+        if (animator == null)
+        {
+            Debug.LogWarning("Animator não encontrado nos filhos do Player!");
+        }
+
         renderers = GetComponentsInChildren<Renderer>();
     }
 
@@ -57,14 +68,27 @@ public class Player : MonoBehaviour
 
     private void Update()
     {
-        // Se estiver "morto" tocando o som, impede de atirar
+        // Se estiver "morto" tocando o som, impede de atirar ou mover
         if (playerCollider != null && !playerCollider.enabled) return;
 
         direction.x = Input.GetAxis("Horizontal");
         direction.y = Input.GetAxis("Vertical");
 
+        // Atualiza o parâmetro booleano de movimento no Animator
+        bool moving = direction.sqrMagnitude > 0.01f;
+        if (animator != null)
+        {
+            animator.SetBool("isMoving", moving);
+        }
+
         if (Input.GetButtonDown("Fire1") && tempoAtual <= 0)
         {
+            // Dispara a animação de tiro
+            if (animator != null)
+            {
+                animator.SetTrigger("isShooting");
+            }
+
             GameObject tiro = Instantiate(tiroPrefab, pontoDeTiro.position, pontoDeTiro.rotation);
 
             Collider tiroCollider = tiro.GetComponent<Collider>();
